@@ -1,5 +1,6 @@
 # Imports
 import nltk
+from nltk.stem import WordNetLemmatizer as lemmatizer
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
@@ -142,12 +143,17 @@ def name_features(name):
     return features
 
 #Feature Extractor Description
-def document_features(document, ls):
-    document = nltk.word_tokenize(document)
-    document_words = set(document)
+def document_features(document, stop, tagset):
+    #Get Tokens & remove stopwords
+    tokens = [lemmatizer.lemmatize(lemmatizer,w.lower()) for w in nltk.word_tokenize(str(document)) if w not in stop]
+    #Tag tokens
+    tokens = nltk.pos_tag(tokens)
+    #Get tags
+    tags = [tag[1] for tag in tokens]
+    #Create Features
     features = {}
-    for word in ls:
-        features['contains({})'.format(word)] = (word in document_words)
+    for tag in tagset['Label']:
+        features["count({})".format(tag)] = tags.count(tag)
     return features
 
 # Capture prints
@@ -167,3 +173,10 @@ class Capturing(list):
         self.extend(self._stringio.getvalue().splitlines())
         del self._stringio    # free up some memory
         sys.stdout = self._stdout
+
+# Check if all classes are being classified
+def pred_check(pred, n):
+    if len(set(pred)) == n:
+        return True
+    else:
+        return False
