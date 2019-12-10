@@ -132,6 +132,9 @@ def create_bin(X,y):
             for r, row in enumerate(X[col]):
                 transactions[r].append(col + str(row))
 
+    #remove target
+    X = X.drop('Target', axis=1)
+
     # Create binary dataset
     TxE = TransactionEncoder()
     te_ary = TxE.fit(transactions).transform(transactions)
