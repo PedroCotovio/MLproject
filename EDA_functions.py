@@ -234,3 +234,11 @@ def int_encode_class(vect):
 
 def int_encode_feature(vect):
     return int_encode_class(vect)
+
+def comp_val(tar, res):
+    cl = set(tar)
+    result = [{x:0 for x in cl} for i in range(max(res)+1)]
+    for i, c in enumerate(res):
+        result[c][tar[i]] += 1
+    result = pd.DataFrame(result)
+    return result
