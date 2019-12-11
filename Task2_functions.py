@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from scipy.cluster.hierarchy import dendrogram
+from scipy.cluster.hierarchy import dendrogram, linkage
 from sklearn.cluster import AgglomerativeClustering
 from sklearn import metrics
 import seaborn as sns; sns.set()
@@ -132,9 +132,6 @@ def create_bin(X,y):
             for r, row in enumerate(X[col]):
                 transactions[r].append(col + str(row))
 
-    #remove target
-    X = X.drop('Target', axis=1)
-
     # Create binary dataset
     TxE = TransactionEncoder()
     te_ary = TxE.fit(transactions).transform(transactions)
@@ -156,3 +153,13 @@ def get_rules(binary_database):
     if len(rules) == 0:
         return 'No rules found'
     return rules
+
+def plot_dendogram(samples, method='ward', distance='euclidean', p=30):
+    mergings = linkage(samples, method=method, metric=distance)
+
+    dendrogram(mergings, p =p, truncate_mode='level',
+               leaf_rotation=90,
+               leaf_font_size=6,
+               )
+
+    return plt
