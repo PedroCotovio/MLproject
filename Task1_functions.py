@@ -41,8 +41,8 @@ def quadratic_kappa(actuals, preds, N=5):
             den += w[i][j] * E[i][j]
     return (1 - (num / den))
 
-def cv_metrics(X, y, classifier, class_names, n_folds):
-    folds = StratifiedKFold(10)
+def cv_metrics(X, y, classifier, class_names, n_folds, quad=True):
+    folds = StratifiedKFold(n_folds)
     best_ = 0
     for train_index, test_index in folds.split(X, y):
         X_train, X_test = X.iloc[train_index], X.iloc[test_index]
@@ -58,16 +58,21 @@ def cv_metrics(X, y, classifier, class_names, n_folds):
 
     plt.figure(figsize=(18, 8));
     disp = plot_confusion_matrix(estimator_, test[0], test[1],
-                                 display_labels=[0, 1, 2, 3],
+                                 display_labels=class_names,
                                  cmap=plt.cm.Blues,
                                  normalize='true')
     disp.ax_.set_title("Normalized confusion matrix")
     # Metrics
     y_pred = estimator_.predict(test[0])
     metrics = classification_report(test[1], y_pred)
-    quad_kappa = quadratic_kappa(test[1], y_pred)
+    if quad is True:
 
-    return plt, estimator_, metrics, quad_kappa
+        quad_kappa = quadratic_kappa(test[1], y_pred)
+        return plt, estimator_, metrics, quad_kappa
+
+    else:
+
+        return plt, estimator_, metrics
 
 def model_metrics(X, y, classifier, class_names):
 
