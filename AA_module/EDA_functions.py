@@ -8,7 +8,7 @@ import seaborn as sns
 import plotly.graph_objects as go
 from sklearn.preprocessing import LabelEncoder
 
-# All functions used in ML project
+# All functions used in the Exploratory Data Analysis of the ML project
 
 # Load data function
 def load_data(fname):
@@ -27,6 +27,11 @@ def load_data(fname):
 
 # Pie Chart
 def make_pie(x):
+    """
+    Plot dataset in Pie Chart
+
+    :param x: array, dataset to plot
+    """
     # get counts
     counts = []
     for i in set(x):
@@ -83,9 +88,17 @@ def make_bar_stack(data, x, y="AdoptionSpeed"):
 
     # Compare variables
 
-
+# Complex Bar plot
 def prepare_plot_dict(df, col, main_count):
-    # From https://www.kaggle.com/artgor/exploration-of-data-step-by-step/notebook
+    """
+    Return dictionary with column counts
+
+    :param df: dataset, dataset to plot
+    :param col: str, column to plot
+    :param main_count: dict, comparison column counts
+
+    From https://www.kaggle.com/artgor/exploration-of-data-step-by-step/notebook
+    """
     main_count = dict(main_count)
     plot_dict = {}
     for i in df[col].unique():
@@ -100,11 +113,23 @@ def prepare_plot_dict(df, col, main_count):
     return plot_dict
 
 
-def make_count_plot(df, x, main_count, hue='AdoptionSpeed', title=''):
-    # From https://www.kaggle.com/artgor/exploration-of-data-step-by-step/notebook
+def make_count_plot(df, x, hue='AdoptionSpeed', title=''):
+    """
+    Return bar chart with comparisons by percentage
+
+    :param df: dataset, dataset to plot
+    :param x: str, column to plot
+    :param hue: str, comparison column
+    :param title: str, Graph title
+
+    From https://www.kaggle.com/artgor/exploration-of-data-step-by-step/notebook
+    """
+
+    main_count = df[hue].value_counts(normalize=True).sort_index()
+
     plt.figure(figsize=(18, 8));
     g = sns.countplot(x=x, data=df, hue=hue);
-    # plt.title(f'AdoptionSpeed {title}')
+    plt.title(f'AdoptionSpeed {title}')
     ax = g.axes
 
     plot_dict = prepare_plot_dict(df, x, main_count)
@@ -120,6 +145,12 @@ def make_count_plot(df, x, main_count, hue='AdoptionSpeed', title=''):
 
 # Bar Chart
 def make_bar_chart(x):
+    """
+    Return Bar Chart
+
+    :param x: array, dataset to plot
+
+    """
     plt.figure(figsize=(14, 6));
     g = sns.countplot(x)
     ax = g.axes
@@ -132,6 +163,13 @@ def make_bar_chart(x):
 
 # Check Pet breeds
 def breeds_check(ls, off):
+    """
+    Check if a string represents a known animal breed
+
+    :param ls: list, strings to check
+    :param off: list, official breeds
+    :return: list, strings that are not breeds
+    """
     not_breeds = []
     for x in range(len(ls)):
         temp = ls[x].split()
@@ -140,7 +178,7 @@ def breeds_check(ls, off):
             if word in ['DOG', 'CAT', 'BROWN'] or 'HAIR' in word:
                 continue
             for breed in off:
-                if word in (breed):
+                if word in breed:
                     count += 1
         if count == 0:
             not_breeds.append(ls[x])
@@ -148,9 +186,14 @@ def breeds_check(ls, off):
 
 
 # Check if is float
-def is_number(s):
+def is_number(string):
+    """
+    Return whether the string can be interpreted as a float.
+
+    :param string: str, string to check for float
+    """
     try:
-        float(s)
+        float(string)
         return True
     except ValueError:
         return False
@@ -158,6 +201,17 @@ def is_number(s):
 
 # Get range between two letters
 def ab_range(a, b, df, x):
+    """
+    Create an alphabetical range between to given letters
+    and slice dataset for all values from a certain column
+    that start with the letters in that range
+
+    :param a: str, first letter
+    :param b: str, last letter
+    :param df: dataset, original
+    :param x: str, column in dataset to slice by
+    :return: dataset, sliced
+    """
     letters = [chr(i) for i in range(ord(a), ord(b) + 1)]
     res = []
     for i, name in enumerate(df[x]):
@@ -171,6 +225,12 @@ def ab_range(a, b, df, x):
 
 # Feature Extractor Names
 def name_features(name):
+    """
+    Count letters in string
+
+    :param name: str, string to count from
+    :return: dict, all letters and respective counts
+    """
     features = {}
     for letter in 'abcdefghijklmnopqrstuvwxyz':
         # features["has({})".format(letter)] = (letter in name.lower())
@@ -180,6 +240,14 @@ def name_features(name):
 
 # Feature Extractor Description
 def document_features(document, stop, tagset):
+    """
+    Count tags in multi word string
+
+    :param document: str, multi word string to evaluate
+    :param stop: list, words to ignore (stopwords)
+    :param tagset: list, all possible tags
+    :return: dict, all tags and respective counts
+    """
     # Get Tokens & remove stopwords
     tokens = [lemmatizer.lemmatize(lemmatizer, w.lower()) for w in nltk.word_tokenize(str(document)) if w not in stop]
     # Tag tokens
@@ -203,6 +271,9 @@ import sys
 
 
 class Capturing(list):
+    """
+    Capture output of print line by line into list as string
+    """
     def __enter__(self):
         self._stdout = sys.stdout
         sys.stdout = self._stringio = StringIO()
@@ -214,8 +285,15 @@ class Capturing(list):
         sys.stdout = self._stdout
 
 
-# Check if all classes are being classified
+# Classification Check
 def pred_check(pred, n):
+    """
+    Check if all classes are being classified
+
+    :param pred: list, predictions made by classifier
+    :param n: int, number of possible classes
+    :return: bool, are all classes being classified ?
+    """
     if len(set(pred)) == n:
         return True
     else:
@@ -225,6 +303,12 @@ def pred_check(pred, n):
 # Encode Features
 
 def int_encode_class(vect):
+    """
+    Encode classes as ints
+
+    :param vect: list, values to encode
+    :return: list, encoded values
+    """
     enc = LabelEncoder()
     label_encoder = enc.fit(vect)
     integer_classes = label_encoder.transform(label_encoder.classes_)
@@ -235,7 +319,14 @@ def int_encode_class(vect):
 def int_encode_feature(vect):
     return int_encode_class(vect)
 
+# Unsupervised comparisons
 def comp_val(tar, res):
+    """
+    Compare unsupervised learning results against known labels
+    :param tar: list, known labels
+    :param res: list, results
+    :return: dataframe, confusion matrix
+    """
     cl = set(tar)
     result = [{x:0 for x in cl} for i in range(max(res)+1)]
     for i, c in enumerate(res):

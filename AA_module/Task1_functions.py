@@ -1,3 +1,4 @@
+# Imports
 import numpy as np
 from scipy import interp
 import matplotlib.pyplot as plt
@@ -10,11 +11,21 @@ from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.feature_selection import SelectFromModel
 from sklearn.calibration import calibration_curve
 
-#from https://www.kaggle.com/aroraaman/quadratic-kappa-metric-explained-in-5-simple-steps
+# All functions used in the First Task of the ML project
+
 def quadratic_kappa(actuals, preds, N=5):
-    """This function calculates the Quadratic Kappa Metric used for Evaluation in the PetFinder competition
+    """
+    This function calculates the Quadratic Kappa Metric used for Evaluation in the PetFinder competition
     at Kaggle. It returns the Quadratic Weighted Kappa metric score between the actual and the predicted values
-    of adoption rating."""
+    of adoption rating.
+
+    :param actuals: array, real labels
+    :param preds: array, predicted labels
+    :param N: int, number of classes
+
+    #from https://www.kaggle.com/aroraaman/quadratic-kappa-metric-explained-in-5-simple-steps
+    """
+
     w = np.zeros((N, N))
     O = confusion_matrix(actuals, preds)
     for i in range(len(w)):
@@ -42,6 +53,21 @@ def quadratic_kappa(actuals, preds, N=5):
     return (1 - (num / den))
 
 def cv_metrics(X, y, classifier, class_names, n_folds, quad=True):
+    """
+    Create supervised learning metrics with cross-validation
+
+    :param X: dataframe, features
+    :param y: array, labels
+    :param classifier: object, unfitted classifier
+    :param class_names: list, strings of names to use in confusion matrix
+    :param n_folds: int, number of folds in cross-validation
+    :param quad: bool, if quadratic metric should be calculated
+    :return: all metrics
+    plt, confusion matrix plot
+    estimator_, best classifier
+    metrics, table of metrics
+    quad_kappa, quadratic metric if calculated
+    """
     folds = StratifiedKFold(n_folds)
     best_ = 0
     for train_index, test_index in folds.split(X, y):
@@ -75,7 +101,17 @@ def cv_metrics(X, y, classifier, class_names, n_folds, quad=True):
         return plt, estimator_, metrics
 
 def model_metrics(X, y, classifier, class_names):
+    """
+    Create supervised learning metrics
 
+    :param X: dataframe, features
+    :param y: array, labels
+    :param classifier: object, unfitted classifier
+    :param class_names: list, strings of names to use in confusion matrix
+    :return: all metrics
+    plt, confusion matrix plot
+    metrics, table of metrics
+    """
     # Split the data into a training set and a test set
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
     #Fit classifier
@@ -96,6 +132,16 @@ def model_metrics(X, y, classifier, class_names):
     return plt, metrics
 
 def svc_param_selection(X, y, nfolds, n):
+
+    """
+    Search for best hyper-parameters for the svc classifier
+
+    :param X: dataframe, features
+    :param y: array, labels
+    :param nfolds: int, number of folds in cross-validation
+    :param n: int, number of iterations in random search
+    :return: object, classifier object with best parameters found
+    """
     Cs = [0.001, 0.01, 0.1, 1, 10]
     gammas = [0.001, 0.01, 0.1, 1]
     degrees = [1, 2, 3, 4, 5, 6, 7, 8]
@@ -106,6 +152,13 @@ def svc_param_selection(X, y, nfolds, n):
     return r_search.best_params_
 
 def calculate_vif_(X, thresh=5.0):
+    """
+    remove features that have high VIF
+
+    :param X: dataframe, features
+    :param thresh: float, vif threshold
+    :return: dataframe, clean dataset
+    """
     variables = list(range(X.shape[1]))
     dropped = True
     while dropped:
@@ -126,6 +179,20 @@ def calculate_vif_(X, thresh=5.0):
 
 def randS (clf, X, y, base_accuracy, n_iter, k_folds, grid):
 
+    """
+    Randomized search
+
+    :param clf: object, classifier
+    :param X: dataframe, features
+    :param y: array, target
+    :param base_accuracy: float, accuracy with default parameters
+    :param n_iter: int, number of iterations in random search
+    :param k_folds: int, number of folds in cross-validation
+    :param grid: dict, grid of parameters to search from
+    :return: rf_random: object, best classifier found
+    improv: float, percentage of improvement
+    """
+
     # Use the random grid to search for best hyper-parameters
     rf_random = RandomizedSearchCV(estimator=clf, param_distributions=grid,
                                    n_iter=n_iter, cv=k_folds, verbose=2, random_state=42, n_jobs=-1)
@@ -139,6 +206,13 @@ def randS (clf, X, y, base_accuracy, n_iter, k_folds, grid):
 
 
 def feature_selector(X, y):
+    """
+    Clean dataset of not needed features
+
+    :param X: dataframe, features
+    :param y: array, target
+    :return: dataframe, clean dataset
+    """
 
     #Remove colinear features
     vif = calculate_vif_(X)
@@ -149,6 +223,18 @@ def feature_selector(X, y):
     return X_new
 
 def et_Srandom(clf, X, y, base_accuracy, n_iter=100, k_folds=3):
+    """
+    Random search for extra tree classifier
+
+    :param clf: object, classifier
+    :param X: dataframe, features
+    :param y: array, target
+    :param base_accuracy: float, accuracy with default parameters
+    :param n_iter: int, number of iterations in random search
+    :param k_folds: int, number of folds in cross-validation
+    :return: rf_random: object, best classifier found
+    improv: float, percentage of improvement
+    """
     # Number of trees in random forest
     n_estimators = [int(x) for x in np.linspace(start=100, stop=2000, num=10)]
     # Type of criterion to consider
@@ -176,6 +262,18 @@ def et_Srandom(clf, X, y, base_accuracy, n_iter=100, k_folds=3):
 
 
 def knn_Srandom (clf, X, y, base_accuracy, n_iter, k_folds=3):
+    """
+    Random search for Kneighbors classifier
+
+    :param clf: object, classifier
+    :param X: dataframe, features
+    :param y: array, target
+    :param base_accuracy: float, accuracy with default parameters
+    :param n_iter: int, number of iterations in random search
+    :param k_folds: int, number of folds in cross-validation
+    :return: rf_random: object, best classifier found
+    improv: float, percentage of improvement
+    """
 
     # Number of Neighbors
     neighbors = list(range(1, 10)) + list(range(11, 30, 3)) + list(range(2, 8))
@@ -201,6 +299,14 @@ def knn_Srandom (clf, X, y, base_accuracy, n_iter, k_folds=3):
 
 # Calibration analysis
 def plot_cal_curve(X, y, clfs):
+    """
+    Plot calibration curve for list of classifiers
+
+    :param X: dataframe, features
+    :param y: array, target
+    :param clfs: list, classifiers
+    :return: plot, calibration curve
+    """
     # Split the data into a training set and a test set
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
 
@@ -242,6 +348,15 @@ def plot_cal_curve(X, y, clfs):
 
 # Classification and ROC analysis
 def roc_metrics(X, y, classifier, n_splits):
+    """
+    Plot cross validated roc curve
+
+    :param X: dataframe, features
+    :param y: array, target
+    :param classifier: object, classifier
+    :param n_splits: int, number of folds in cross-validation
+    :return: plot, Roc Curve
+    """
     # Run classifier with cross-validation and plot ROC curves
     cv = StratifiedKFold(n_splits=n_splits)
 

@@ -1,23 +1,42 @@
+# Imports
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.cluster.hierarchy import dendrogram, linkage
 from sklearn.cluster import AgglomerativeClustering
 from sklearn import metrics
-import seaborn as sns; sns.set()
 from mlxtend.preprocessing import TransactionEncoder
 from mlxtend.frequent_patterns import apriori, association_rules
+import seaborn as sns; sns.set()
 
-#Creates confusion matrix
+# All functions used in the Second Task of the ML project
+
+# Creates confusion matrix
 def get_cm(tar, res):
+    """
+    Compare unsupervised learning results against known labels
+    Homologous of comp_val in EDA_Functions
+
+    :param tar: list, known labels
+    :param res: list, results
+    :return: dataframe, confusion matrix
+    """
+    cl = set(tar)
     cl = set(tar)
     result = [{x: 0 for x in cl} for i in range(max(res) + 1)]
     for i, c in enumerate(res):
         result[c][tar[i]] += 1
     return pd.DataFrame(result)
 
-#Checks matrix distribution
+# Matrix distribution
 def checkcm_dist(cm, th=0.75):
+    """
+    Checks matrix distribution
+
+    :param cm: dataframe, confusion matrix
+    :param th: float, threshold
+    :return: bool
+    """
     counts = []
     for line in cm.values:
         counts.append(sum(line))
@@ -26,8 +45,16 @@ def checkcm_dist(cm, th=0.75):
         if count > th: return False
     return True
 
-#Calculates distances
+#Calculate distances
 def get_distances(X,model,mode='l2'):
+    """
+    Calculates distance between clusters
+
+    :param X: dataframe, features
+    :param model: object, clustering algorithm
+    :param mode: str, metric
+    :return: lists of distances and weights
+    """
     distances = []
     weights = []
     children=model.children_
@@ -72,8 +99,13 @@ def get_distances(X,model,mode='l2'):
         weights.append( wNew)
     return distances, weights
 
-#Plots dendogram
+#Plot dendogram
 def plot_dendo(model, X, **kwargs):
+    """
+    Plot hierarchical clustering dendogram
+    :param X: dataframe, features
+    :param model: object, classifier
+    """
     # Create linkage matrix and then plot the dendrogram
 
     distance, weight = get_distances(X, model)
@@ -84,6 +116,16 @@ def plot_dendo(model, X, **kwargs):
 
 #AC parameter grid search
 def ACparm(X, y, n):
+    """
+    Grid search for Agglomerative clustering algorithm
+
+    :param X: dataframe, features
+    :param y: array, target
+    :param n: number of grid search iterations
+    :return: model: object, best classifier
+    best: float, fowlkes mallows score
+    cm: dataframe, confusion matrix
+    """
 
     linkages = ['ward', 'complete', 'average', 'single']
     affinitys = ['euclidean', 'l1', 'l2', 'manhattan']
@@ -107,20 +149,28 @@ def ACparm(X, y, n):
     return model, best, cm
 
 def model_metrics(y, classifier):
+    """
+    Get unsupervised model metrics
+
+    :param y: array, target
+    :param classifier: object, clustering algorithm
+    :return: Confusion matrix and fowlkes mallows score
+    """
 
     np.set_printoptions(precision=2)
-
-    #Plot not used
-    #sns.heatmap(get_cm(y, classifier.labels_), square=True, annot=True, cbar=False,
-    #            xticklabels=range(classifier.n_clusters),
-    #            yticklabels=range(classifier.n_clusters))
-    #plt.ylabel('Cluster');
 
     return get_cm(y, classifier.labels_), \
            metrics.fowlkes_mallows_score(y, classifier.labels_)
 
-# creates binary dataset
+# binary dataset
 def create_bin(X,y):
+    """
+    Create transaction based binary dataset
+
+    :param X: dataframe, features
+    :param y: array, target
+    :return: dataframe, binary dataset
+    """
     # check if feature is binary and create transactions
     bindf = pd.DataFrame()
     X['Target'] = y
@@ -140,6 +190,12 @@ def create_bin(X,y):
     return binary_database
 
 def get_rules(binary_database):
+    """
+    Apply association rules algorithm, to check for patterns
+
+    :param binary_database: dataframe, transaction based binary dataset
+    :return: Rules
+    """
     # Compute itemsets
     frequent_itemsets = apriori(binary_database, min_support=0.3, use_colnames=True)
     # Compute association rules
@@ -155,6 +211,15 @@ def get_rules(binary_database):
     return rules
 
 def plot_dendogram(samples, method='ward', distance='euclidean', p=30):
+    """
+    Plot dendogram (without specific model)
+
+    :param samples: dataframe, features
+    :param method: str, method to calculate distances
+    :param distance: str, type of distances
+    :param p: int, number of branches to plot
+    :return: plot
+    """
     mergings = linkage(samples, method=method, metric=distance)
 
     dendrogram(mergings, p =p, truncate_mode='level',
