@@ -148,7 +148,7 @@ def ACparm(X, y, n):
 
     return model, best, cm
 
-def model_metrics(y, classifier):
+def model_metrics2(y, classifier):
     """
     Get unsupervised model metrics
 

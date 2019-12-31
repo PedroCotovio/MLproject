@@ -100,7 +100,7 @@ def cv_metrics(X, y, classifier, class_names, n_folds, quad=True):
 
         return plt, estimator_, metrics
 
-def model_metrics(X, y, classifier, class_names):
+def model_metrics(X, y, classifier, class_names, plot=True):
     """
     Create supervised learning metrics
 
@@ -115,21 +115,28 @@ def model_metrics(X, y, classifier, class_names):
     # Split the data into a training set and a test set
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
     #Fit classifier
-    classifier.fit(X_train,y_train)
+    classifier.fit(X_train, y_train)
 
     np.set_printoptions(precision=2)
-    # Plot
-    plt.figure(figsize=(18, 8));
-    disp = plot_confusion_matrix(classifier, X_test, y_test,
-                                 display_labels=class_names,
-                                 cmap=plt.cm.Blues,
-                                 normalize='true')
-    disp.ax_.set_title("Normalized confusion matrix")
+
     # Metrics
     y_pred = classifier.predict(X_test)
     metrics = classification_report(y_test, y_pred)
 
-    return plt, metrics
+    if plot is True:
+        # Plot
+        plt.figure(figsize=(18, 8));
+        disp = plot_confusion_matrix(classifier, X_test, y_test,
+                                     display_labels=class_names,
+                                     cmap=plt.cm.Blues,
+                                     normalize='true')
+        disp.ax_.set_title("Normalized confusion matrix")
+
+        return plt, metrics
+
+    else:
+        return metrics
+
 
 def svc_param_selection(X, y, nfolds, n):
 
