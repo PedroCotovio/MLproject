@@ -52,42 +52,6 @@ def make_pie(x):
 
     plt.show()
 
-
-# Stacked Chart
-
-def get_percentage(data, x, y):
-    yl = list(set(map(int, data[y])))  # .sort()
-    y_data = []
-    xl = list(set(map(int, data[x])))
-    x_data = []
-
-    for i in yl:
-        x_data.append(list(data.loc[data[y] == i].groupby(x)[y].count()))
-    x_data = np.transpose(x_data)
-
-    for i in yl:
-        tmp = list(data.loc[data[y] == i].groupby(x)[y].count())
-    for i in range(0, len(tmp)):
-        tmp[i] = (tmp[i] / sum(x_data[i])) * 100
-    y_data.append(tmp)
-    return x_data, y_data, yl, xl
-
-
-def set_graph(yl, xl, y_data):
-    traces = []
-    for i in range(0, len(yl)):
-        traces.append(go.Bar(name=str(yl[i]), x=xl,y=y_data[i]))
-    fig = go.Figure(data=traces)  # , layout=layout)
-    fig.update_layout(barmode='stack')
-    fig.show()
-
-
-def make_bar_stack(data, x, y="AdoptionSpeed"):
-    x_data, y_data, yl, xl = get_percentage(data=data, x=x, y=y)
-    set_graph(yl=yl, xl=xl, y_data=y_data)
-
-    # Compare variables
-
 # Complex Bar plot
 def prepare_plot_dict(df, col, main_count):
     """
@@ -113,7 +77,7 @@ def prepare_plot_dict(df, col, main_count):
     return plot_dict
 
 
-def make_count_plot(df, x, hue='AdoptionSpeed', title=''):
+def make_count_plot(df, x, hue='AdoptionSpeed', title='', fig=True):
     """
     Return bar chart with comparisons by percentage
 
@@ -121,15 +85,16 @@ def make_count_plot(df, x, hue='AdoptionSpeed', title=''):
     :param x: str, column to plot
     :param hue: str, comparison column
     :param title: str, Graph title
+    :param fig: Bool, if figure size should be fixed
 
     From https://www.kaggle.com/artgor/exploration-of-data-step-by-step/notebook
     """
 
     main_count = df[hue].value_counts(normalize=True).sort_index()
-
-    plt.figure(figsize=(18, 8));
+    if fig is True:
+        plt.figure(figsize=(18, 8));
     g = sns.countplot(x=x, data=df, hue=hue);
-    plt.title(f'AdoptionSpeed {title}')
+    plt.title = 'AdoptionSpeed and ' + str(title)
     ax = g.axes
 
     plot_dict = prepare_plot_dict(df, x, main_count)
