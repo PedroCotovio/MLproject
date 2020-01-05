@@ -5,7 +5,6 @@ from sklearn.metrics import accuracy_score
 from imblearn.combine import SMOTETomek
 import numpy as np
 
-
 class P_Classifier:
     def __init__(self, zeros=4, balanced=True):
 

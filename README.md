@@ -8,7 +8,8 @@ We decomposed the project into three main tasks:
 -	Supervised Learning Problems
 -	Unsupervised Learning Problems
 Sometimes these parts overlap a bit, but we mainly tried to separate them for easier analysis.
-Inside our python module there are 3 python files that contain functions designed to mostly serve one specific notebook.
+Inside our python module there are 3 python files that contain functions designed to mostly serve one specific notebook,
+and 1 python file with our ensemble classifier implementation.
 
 Developed by:
 -	Pedro Cotovio (55053)
