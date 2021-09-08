@@ -1,4 +1,4 @@
-# Machine LEarning FCUL 19/20 
+# Machine Learning FCUL 19/20 
 
 This work was developed as the final project of FCUL's 2019/2020 edition of the [Machine Learning course](https://fenix.ciencias.ulisboa.pt/courses/aaut-2-2254879305236782)
 
