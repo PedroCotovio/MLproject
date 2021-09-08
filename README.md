@@ -5,9 +5,9 @@ This work was developed as the final project of FCUL's 2019/2020 edition of the 
 ## ML Project - Learning about Pet Adoption using PetFinder.my Dataset
 
 We decomposed the project into three main tasks:
--	Exploratory data analysis
--	Supervised Learning Problems
--	Unsupervised Learning Problems
+-	Exploratory data analysis (EDA)
+-	Supervised Learning Problems (Task1)
+-	Unsupervised Learning Problems (Task2)
 
 Produced by:
 -	Pedro Cotovio (55053)
