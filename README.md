@@ -1,17 +1,15 @@
-MLproject
+# Machine LEarning FCUL 19/20 
 
-Our project is divided in two main components:  3 Jupyter Notebooks and 1 Python Module 
-We decided to divide our project this way to eliminate repetitive code, and to make our notebooks more readable. 
-Every line of code has been documented and explained to facilitate the readability of the project.
+This work was developed as the final project of FCUL's 2019/2020 edition of the [Machine Learning course](https://fenix.ciencias.ulisboa.pt/courses/aaut-2-2254879305236782)
+
+## ML Project - Learning about Pet Adoption using PetFinder.my Dataset
+
 We decomposed the project into three main tasks:
 -	Exploratory data analysis
 -	Supervised Learning Problems
 -	Unsupervised Learning Problems
-Sometimes these parts overlap a bit, but we mainly tried to separate them for easier analysis.
-Inside our python module there are 3 python files that contain functions designed to mostly serve one specific notebook,
-and 1 python file with our ensemble classifier implementation.
 
-Developed by:
+Produced by:
 -	Pedro Cotovio (55053)
 -	Sofia Amorim (46534)
 -	Miguel Almeida (55055)
